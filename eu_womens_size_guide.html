@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#5a34b0">
+<title>دليل المقاسات الأوروبية للملابس النسائية</title>
+<style>
+:root{--ink:#201b2d;--muted:#6b6579;--bg:#f6f4fb;--card:#fff;--line:#e6e0f0;--brand:#5a34b0;--soft:#f0eaff;--hi:#ece3ff;--warn-bg:#fff8e8;--warn-line:#f1dfb3;--warn-ink:#6f5316}
+@media(prefers-color-scheme:dark){:root{--ink:#f1edf8;--muted:#a79fb8;--bg:#16121f;--card:#201a2e;--line:#352d48;--brand:#b79cff;--soft:#2b2340;--hi:#3a2d5c;--warn-bg:#2d2512;--warn-line:#5c4a1c;--warn-ink:#e9cf8a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;color:var(--ink);line-height:1.6}
+.wrap{max-width:900px;margin:auto;padding:18px 14px 36px}
+h1{font-size:clamp(1.4rem,5vw,2rem);margin:6px 0 4px;line-height:1.3}
+.lead{margin:0 0 14px;color:var(--muted);font-size:.93rem}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:thin}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:9px 15px;font:inherit;font-size:.9rem;font-weight:600;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+@media(prefers-color-scheme:dark){.chip[aria-pressed="true"]{color:#1b1230}}
+.chip:focus-visible,button:focus-visible{outline:3px solid #b9a2f7;outline-offset:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:14px}
+h2{margin:0 0 4px;font-size:1.15rem}
+h3{margin:20px 0 8px;font-size:1rem}
+.sub{margin:0 0 14px;color:var(--muted);font-size:.9rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+label{display:block;font-size:.85rem;font-weight:700;margin-bottom:6px}
+input{width:100%;min-height:48px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 12px;font:inherit}
+input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px #6d3fd130}
+.result{margin-top:14px;background:var(--soft);border-radius:14px;padding:14px 16px}
+.rl{font-size:.8rem;color:var(--muted)}
+.rv{font-size:1.7rem;font-weight:800;color:var(--brand);line-height:1.3}
+.rd{font-size:.88rem;margin-top:4px}
+.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+button.act{border:0;border-radius:11px;padding:10px 15px;font:inherit;font-weight:700;cursor:pointer}
+.primary{background:var(--brand);color:#fff}
+@media(prefers-color-scheme:dark){.primary{color:#1b1230}}
+.secondary{background:var(--line);color:var(--ink)}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;text-align:center;min-width:360px}
+th,td{padding:10px 8px;border-bottom:1px solid var(--line);font-size:.9rem;white-space:nowrap}
+th{background:var(--soft);font-size:.82rem}
+tbody tr:last-child td{border-bottom:0}
+td:first-child{font-weight:800;color:var(--brand)}
+tr.plus td:first-child::after{content:" +";font-weight:600}
+tr.hl td{background:var(--hi)}
+tr.divider td{border-top:2px solid var(--brand)}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.how div{background:var(--soft);border-radius:12px;padding:11px 13px;font-size:.88rem}
+.how b{display:block;margin-bottom:2px}
+.notice{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--warn-bg);border:1px solid var(--warn-line);color:var(--warn-ink);font-size:.87rem}
+.note{font-size:.82rem;color:var(--muted);margin:10px 0 0}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>دليل المقاسات الأوروبية للملابس النسائية</h1>
+  <p class="lead">اختر نوع القطعة، ثم أدخل قياساتك بالسنتيمتر لتعرف المقاس الأوروبي المناسب. لكل فئة جدولها الخاص.</p>
+
+  <div class="chips" id="chips" role="group" aria-label="نوع القطعة"></div>
+
+  <section class="card" id="panel" aria-live="polite"></section>
+
+  <div class="notice">الجداول تقديرية لقياسات الجسم وفق المقاسات الأوروبية الشائعة. إذا وضع البائع جدولًا خاصًا للمنتج، اعتمد عليه أولًا.</div>
+</main>
+
+<script>
+/* ===== بيانات المقاسات الأوروبية (قياسات الجسم بالسنتيمتر) ===== */
+const EU=[32,34,36,38,40,42,44,46,48,50,52];
+const M={ // القيمة المركزية لكل مقاس؛ المدى المعروض = ±2
+  bust:   eu=>76+(eu-32)*2,
+  waist:  eu=>58+(eu-32)*2,
+  hip:    eu=>84+(eu-32)*2,
+  shoulder:eu=>35+(eu-32)/2
+};
+const LABEL={bust:"محيط الصدر",waist:"محيط الخصر",hip:"محيط الورك",shoulder:"عرض الكتف"};
+const HOW={
+  bust:"عند أعرض نقطة في الصدر، والشريط أفقي من الخلف.",
+  waist:"عند أنحف نقطة في الجذع، فوق السرّة بقليل.",
+  hip:"عند أعرض نقطة في الوركين والمقعدة.",
+  shoulder:"من حافة الكتف إلى حافة الكتف الأخرى من الخلف."
+};
+const CATS=[
+  {id:"bra",name:"حمالات الصدر"},
+  {id:"panties",name:"السراويل الداخلية",cols:["waist","hip"],tip:"إذا وقعت بين مقاسين، اختر الأكبر لراحة أكثر."},
+  {id:"tops",name:"الأقمصة والبلوزات",cols:["bust","waist","shoulder"],tip:"للقصّات الضيقة أو الجيرسي اختر مقاسك، وللقصّات الواسعة يمكنك النزول مقاسًا."},
+  {id:"nightwear",name:"ملابس النوم",cols:["bust","waist","hip"],tip:"ملابس النوم تُفضَّل واسعة؛ إذا أردت قصّة مريحة اختر مقاسًا أكبر."},
+  {id:"set3",name:"لانجري 3 قطع",cols:["bust","waist","hip"],tip:"إذا اختلف مقاس الصدر عن الورك، اختر الأكبر أو اشترِ القطع منفصلة. الحمالة داخل الطقم تتبع جدول حمالات الصدر."},
+  {id:"dress",name:"الفساتين",cols:["bust","waist","hip"],tip:"اختر المقاس حسب أكبر قياس لديك بين الصدر والورك."},
+  {id:"pants",name:"البناطيل والجينز",cols:["waist","hip"],tip:"للجينز غير المرن اختر حسب الورك إذا كان أكبر من الخصر."},
+  {id:"skirt",name:"التنانير",cols:["waist","hip"],tip:"التنورة الضيقة تعتمد على الورك أكثر من الخصر."},
+  {id:"jacket",name:"الجاكيتات والمعاطف",cols:["bust","waist","shoulder"],tip:"اترك مجالًا للملابس تحتها؛ إذا ارتديت طبقات اختر مقاسًا أكبر."},
+  {id:"sport",name:"الملابس الرياضية",cols:["bust","waist","hip"],tip:"القماش المرن يسمح بمقاسك مباشرة؛ للضغط الخفيف انزل مقاسًا."}
+];
+/* حمالات الصدر: حزام + كوب */
+const BANDS=[65,70,75,80,85,90,95,100,105,110];
+const CUPS=["AA","A","B","C","D","E","F","G","H"]; // كل كوب = فرق 2 سم، يبدأ AA عند 10 سم
+
+const chips=document.getElementById("chips"), panel=document.getElementById("panel");
+const rng=(v)=>`${v-2}–${v+2}`;
+const fmt=(m,eu)=>{const v=M[m](eu);return m==="shoulder"?`${v-1}–${v+1}`:rng(v)};
+
+function sizeRows(cols,hlIdx){
+  return EU.map((eu,i)=>`<tr class="${eu>=46?"plus":""} ${i===hlIdx?"hl":""} ${eu===46?"divider":""}"><td>EU ${eu}</td>${cols.map(c=>`<td>${fmt(c,eu)}</td>`).join("")}</tr>`).join("");
+}
+
+function renderGeneric(cat){
+  panel.innerHTML=`
+    <h2>${cat.name}</h2>
+    <p class="sub">أدخل القياسات التي تعرفها؛ إذا أدخلت أكثر من قياس يُعتمد الأكبر.</p>
+    <div class="grid">${cat.cols.map(c=>`<div><label for="in_${c}">${LABEL[c]} (سم)</label><input id="in_${c}" data-k="${c}" type="number" inputmode="decimal" min="40" max="160" placeholder="مثال: ${Math.round(M[c](38))}"></div>`).join("")}</div>
+    <div class="result"><div class="rl">المقاس الأوروبي المناسب</div><div class="rv" id="out">أدخل قياسًا</div><div class="rd" id="det">القياس عند الجلد أو فوق ملابس خفيفة، والشريط مريح دون شدّ.</div>
+      <div class="actions"><button class="act primary" id="copy" type="button">نسخ النتيجة</button><button class="act secondary" id="reset" type="button">مسح</button></div></div>
+    <h3>جدول المقاسات (S إلى Plus Size)</h3>
+    <div class="table-wrap"><table><thead><tr><th>المقاس</th>${cat.cols.map(c=>`<th>${LABEL[c]} (سم)</th>`).join("")}</tr></thead><tbody id="tb">${sizeRows(cat.cols,-1)}</tbody></table></div>
+    <p class="note">الصفوف التي تحمل علامة + (EU 46–52) هي مقاسات البلس سايز.</p>
+    <h3>طريقة القياس</h3>
+    <div class="how">${cat.cols.map(c=>`<div><b>${LABEL[c]}</b>${HOW[c]}</div>`).join("")}</div>
+    <div class="notice" style="margin-top:14px"><strong>نصيحة:</strong> ${cat.tip}</div>`;
+
+  const inputs=[...panel.querySelectorAll("input")], out=panel.querySelector("#out"), det=panel.querySelector("#det"), tb=panel.querySelector("#tb");
+  function update(){
+    let idx=-1, used=[], over=false;
+    inputs.forEach(inp=>{
+      const v=Number(inp.value); if(!v) return;
+      const k=inp.dataset.k;
+      let i=EU.findIndex(eu=>v<=M[k](eu)+(k==="shoulder"?1:2));
+      if(i===-1){i=EU.length-1;over=true}
+      idx=Math.max(idx,i); used.push(`${LABEL[k]} ${v}`);
+    });
+    if(idx<0){out.textContent="أدخل قياسًا";det.textContent="القياس عند الجلد أو فوق ملابس خفيفة، والشريط مريح دون شدّ.";tb.innerHTML=sizeRows(cat.cols,-1);return}
+    const eu=EU[idx];
+    out.textContent=over?"أكبر من EU 52":`EU ${eu}`+(eu>=46?" (Plus Size)":"");
+    det.textContent=(over?"قياسك أكبر من الجدول؛ اطلب من البائع جدول مقاسات أكبر. ":"")+"القياسات: "+used.join(" · ");
+    tb.innerHTML=sizeRows(cat.cols,over?-1:idx);
+  }
+  inputs.forEach(i=>i.addEventListener("input",update));
+  panel.querySelector("#reset").onclick=()=>{inputs.forEach(i=>i.value="");update()};
+  panel.querySelector("#copy").onclick=async e=>{
+    const t=`${cat.name}: ${out.textContent}\n${det.textContent}`;
+    try{await navigator.clipboard.writeText(t)}catch(_){const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();document.execCommand("copy");a.remove()}
+    e.target.textContent="تم النسخ";setTimeout(()=>e.target.textContent="نسخ النتيجة",1500);
+  };
+}
+
+function renderBra(){
+  panel.innerHTML=`
+    <h2>حمالات الصدر</h2>
+    <p class="sub">المقاس = رقم الحزام + حرف الكوب (مثل 75C). الحزام من محيط تحت الصدر، والكوب من الفرق بين الصدر وتحت الصدر.</p>
+    <div class="grid">
+      <div><label for="ub">محيط تحت الصدر (سم)</label><input id="ub" type="number" inputmode="decimal" min="55" max="120" placeholder="مثال: 78"></div>
+      <div><label for="bu">محيط الصدر عند أكثر نقطة امتلاء (سم)</label><input id="bu" type="number" inputmode="decimal" min="60" max="150" placeholder="مثال: 94"></div>
+    </div>
+    <div class="result"><div class="rl">المقاس الأوروبي</div><div class="rv" id="out">أدخل القياسين</div><div class="rd" id="det">قس بشريط أفقي ومريح، دون شدّ قوي.</div>
+      <div class="actions"><button class="act primary" id="copy" type="button">نسخ النتيجة</button><button class="act secondary" id="reset" type="button">مسح</button></div></div>
+    <h3>جدول الحزام</h3>
+    <div class="table-wrap"><table><thead><tr><th>الحزام EU</th><th>محيط تحت الصدر (سم)</th></tr></thead><tbody id="bt">${BANDS.map(b=>`<tr class="${b>=95?"plus":""}"><td>${b}</td><td>${b-2}–${b+2}</td></tr>`).join("")}</tbody></table></div>
+    <h3>جدول الكوب</h3>
+    <div class="table-wrap"><table><thead><tr><th>الكوب</th><th>الفرق: الصدر − تحت الصدر (سم)</th></tr></thead><tbody id="ct">${CUPS.map((c,i)=>`<tr><td>${c}</td><td>${10+i*2}–${12+i*2}</td></tr>`).join("")}</tbody></table></div>
+    <p class="note">الحزام 95 فأكثر وكوب D فأكثر يدخلان ضمن مقاسات البلس سايز في معظم العلامات.</p>
+    <h3>طريقة القياس</h3>
+    <div class="how"><div><b>تحت الصدر</b>مباشرة تحت الصدر، والشريط مستوٍ حول الجسم وملاصق دون ضغط.</div><div><b>الصدر</b>عند أكثر نقطة امتلاء، والشريط أفقي دون ضغط.</div></div>
+    <div class="notice" style="margin-top:14px"><strong>مقاسات شقيقة:</strong> إذا لم يتوفر مقاسك يمكنك تجربة الحزام الأصغر بكوب أكبر بحرف واحد، أو الحزام الأكبر بكوب أصغر بحرف واحد (مثل 80B = 75C = 85A).</div>`;
+  const ub=panel.querySelector("#ub"), bu=panel.querySelector("#bu"), out=panel.querySelector("#out"), det=panel.querySelector("#det");
+  function update(){
+    const u=Number(ub.value), b=Number(bu.value);
+    if(!u||!b){out.textContent="أدخل القياسين";det.textContent="قس بشريط أفقي ومريح، دون شدّ قوي.";return}
+    if(b<=u){out.textContent="تحقق من القياسين";det.textContent="محيط الصدر يجب أن يكون أكبر من محيط تحت الصدر.";return}
+    if(u<63-2||u>112){out.textContent="خارج الجدول";det.textContent="محيط تحت الصدر خارج المدى (61–112 سم). اطلب جدول البائع.";return}
+    const band=BANDS.reduce((a,v)=>Math.abs(v-u)<Math.abs(a-u)?v:a,BANDS[0]);
+    const diff=b-u, ci=Math.floor((diff-10)/2);
+    let cup, note="";
+    if(ci<0){out.textContent=`EU ${band}`;det.textContent=`الفرق ${diff.toFixed(1)} سم أقل من كوب AA؛ جرّب كوب AA أو بدون كوب (برالت).`;return}
+    if(ci>=CUPS.length){out.textContent=`EU ${band}`;det.textContent=`الفرق ${diff.toFixed(1)} سم أكبر من كوب H؛ ابحث عن علامة متخصصة بالأكواب الكبيرة.`;return}
+    cup=CUPS[ci];
+    const sis=[];
+    if(BANDS.includes(band-5)&&CUPS[ci+1]) sis.push(`${band-5}${CUPS[ci+1]}`);
+    if(BANDS.includes(band+5)&&ci>0) sis.push(`${band+5}${CUPS[ci-1]}`);
+    out.textContent=`EU ${band}${cup}`+(band>=95||ci>=4?" (Plus Size)":"");
+    det.textContent=`الفرق ${diff.toFixed(1)} سم`+(sis.length?` · مقاسات شقيقة: ${sis.join(" أو ")}`:"");
+  }
+  ub.addEventListener("input",update);bu.addEventListener("input",update);
+  panel.querySelector("#reset").onclick=()=>{ub.value="";bu.value="";update()};
+  panel.querySelector("#copy").onclick=async e=>{
+    const t=`حمالة صدر: ${out.textContent}\n${det.textContent}`;
+    try{await navigator.clipboard.writeText(t)}catch(_){const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();document.execCommand("copy");a.remove()}
+    e.target.textContent="تم النسخ";setTimeout(()=>e.target.textContent="نسخ النتيجة",1500);
+  };
+}
+
+function select(id){
+  [...chips.children].forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.id===id)));
+  const cat=CATS.find(c=>c.id===id);
+  id==="bra"?renderBra():renderGeneric(cat);
+}
+CATS.forEach(c=>{
+  const b=document.createElement("button");
+  b.className="chip";b.type="button";b.dataset.id=c.id;b.textContent=c.name;
+  b.addEventListener("click",()=>select(c.id));
+  chips.appendChild(b);
+});
+select("bra");
+</script>
+</body>
+</html>
